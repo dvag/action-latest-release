@@ -1,11 +1,17 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'latest-release'
+description: 'Retrieves the latest release (tag) of a repository'
+author: 'Ralf Stuckert'
 inputs:
-  milliseconds: # change this
+  repository:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'the repository to get the latest release from'
+  token:
+    required: true
+    description: 'the PAT allowing to access the repository'
+    default: ${{ github.token }}
+outputs:
+  release:
+    description: 'the release version tag'
 runs:
   using: 'node12'
   main: 'dist/index.js'
