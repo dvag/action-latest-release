@@ -1,22 +1,15 @@
-import * as actionsCore from '@actions/core'
+import * as core from '@actions/core'
 import {Octokit} from '@octokit/rest'
 
-export function getParameter(
-  parameter: string,
-  core: typeof actionsCore,
-  required = true
-): string {
+export function getParameter(parameter: string, required = true): string {
   const value = core.getInput(parameter)
   if (required && !value) throw new Error(`parameter '${parameter}' is missing`)
   return value
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export async function retrieveLatest(
-  core: typeof actionsCore,
-  octokit: Octokit
-) {
-  const repository = getParameter('repository', core)
+export async function retrieveLatest(octokit: Octokit) {
+  const repository = getParameter('repository')
   const [owner, repo] = repository.split('/')
   const releasesResponse = await octokit.repos.listReleases({
     owner,
@@ -36,14 +29,14 @@ export async function retrieveLatest(
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function run() {
   try {
-    const token = getParameter('token', actionsCore)
+    const token = getParameter('token')
     const octokit = new Octokit({auth: token})
-    await retrieveLatest(actionsCore, octokit)
+    await retrieveLatest(octokit)
   } catch (error) {
     if (error instanceof Error) {
-      actionsCore.setFailed(error.message)
+      core.setFailed(error.message)
     } else {
-      actionsCore.setFailed(JSON.stringify(error))
+      core.setFailed(JSON.stringify(error))
     }
   }
 }

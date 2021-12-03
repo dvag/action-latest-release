@@ -29,10 +29,10 @@ beforeEach(() => {
 test('getParameter', async () => {
   inputs = {repository: 'myowner/myrepo', blubber: 'spongebob'}
 
-  expect(getParameter('repository', core)).toBe('myowner/myrepo')
-  expect(getParameter('blubber', core)).toBe('spongebob')
+  expect(getParameter('repository')).toBe('myowner/myrepo')
+  expect(getParameter('blubber')).toBe('spongebob')
 
-  expect(() => getParameter('token', core)).toThrowError(Error)
+  expect(() => getParameter('token')).toThrowError(Error)
 })
 
 test('only releases', async () => {
@@ -43,7 +43,7 @@ test('only releases', async () => {
     {tag_name: 'a'}
   ]
 
-  await retrieveLatest(core, octo)
+  await retrieveLatest(octo)
   expect(outputFn).toHaveBeenCalledWith('release', 'c')
   expect(setFailed).not.toHaveBeenCalled()
 })
@@ -56,7 +56,7 @@ test('releases, drafts and prereleases', async () => {
     {tag_name: 'a'}
   ]
 
-  await retrieveLatest(core, octo)
+  await retrieveLatest(octo)
   expect(outputFn).toHaveBeenCalledWith('release', 'a')
   expect(setFailed).not.toHaveBeenCalled()
 })
@@ -68,7 +68,7 @@ test('only drafts and prereleases', async () => {
     {tag_name: 'b', draft: true}
   ]
 
-  await retrieveLatest(core, octo)
+  await retrieveLatest(octo)
   expect(outputFn).not.toHaveBeenCalled()
   expect(setFailed).toHaveBeenCalledWith('No valid releases')
 })
@@ -77,7 +77,7 @@ test('no releases at all', async () => {
   inputs = {repository: 'myowner/myrepo'}
   responses['myowner/myrepo'] = []
 
-  await retrieveLatest(core, octo)
+  await retrieveLatest(octo)
   expect(outputFn).not.toHaveBeenCalled()
   expect(setFailed).toHaveBeenCalledWith('No valid releases')
 })

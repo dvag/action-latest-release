@@ -36,9 +36,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports.retrieveLatest = exports.getParameter = void 0;
-const actionsCore = __importStar(__nccwpck_require__(2186));
+const core = __importStar(__nccwpck_require__(2186));
 const rest_1 = __nccwpck_require__(5375);
-function getParameter(parameter, core, required = true) {
+function getParameter(parameter, required = true) {
     const value = core.getInput(parameter);
     if (required && !value)
         throw new Error(`parameter '${parameter}' is missing`);
@@ -46,9 +46,9 @@ function getParameter(parameter, core, required = true) {
 }
 exports.getParameter = getParameter;
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function retrieveLatest(core, octokit) {
+function retrieveLatest(octokit) {
     return __awaiter(this, void 0, void 0, function* () {
-        const repository = getParameter('repository', core);
+        const repository = getParameter('repository');
         const [owner, repo] = repository.split('/');
         const releasesResponse = yield octokit.repos.listReleases({
             owner,
@@ -70,16 +70,16 @@ exports.retrieveLatest = retrieveLatest;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const token = getParameter('token', actionsCore);
+            const token = getParameter('token');
             const octokit = new rest_1.Octokit({ auth: token });
-            yield retrieveLatest(actionsCore, octokit);
+            yield retrieveLatest(octokit);
         }
         catch (error) {
             if (error instanceof Error) {
-                actionsCore.setFailed(error.message);
+                core.setFailed(error.message);
             }
             else {
-                actionsCore.setFailed(JSON.stringify(error));
+                core.setFailed(JSON.stringify(error));
             }
         }
     });
