@@ -35,40 +35,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
+exports.run = exports.retrieveLatest = exports.getParameter = void 0;
+const actionsCore = __importStar(__nccwpck_require__(2186));
 const rest_1 = __nccwpck_require__(5375);
-const repository = core.getInput('repository');
-const token = core.getInput('token');
-const octokit = new rest_1.Octokit({ auth: token });
+function getParameter(parameter, core, required = true) {
+    const value = core.getInput(parameter);
+    if (required && !value)
+        throw new Error(`parameter '${parameter}' is missing`);
+    return value;
+}
+exports.getParameter = getParameter;
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function retrieveLatest(core, octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const repository = getParameter('repository', core);
+        const [owner, repo] = repository.split('/');
+        const releasesResponse = yield octokit.repos.listReleases({
+            owner,
+            repo
+        });
+        const releases = releasesResponse.data
+            .filter(x => !x.prerelease)
+            .filter(x => !x.draft);
+        if (releases.length) {
+            core.setOutput('release', releases[0].tag_name);
+        }
+        else {
+            core.setFailed('No valid releases');
+        }
+    });
+}
+exports.retrieveLatest = retrieveLatest;
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const [owner, repo] = repository.split('/');
-            const releasesResponse = yield octokit.repos.listReleases({
-                owner,
-                repo
-            });
-            const releases = releasesResponse.data
-                .filter(x => !x.prerelease)
-                .filter(x => !x.draft);
-            if (releases.length) {
-                core.setOutput('release', releases[0].tag_name);
-            }
-            else {
-                core.setFailed('No valid releases');
-            }
+            const token = getParameter('token', actionsCore);
+            const octokit = new rest_1.Octokit({ auth: token });
+            yield retrieveLatest(actionsCore, octokit);
         }
         catch (error) {
             if (error instanceof Error) {
-                core.setFailed(error.message);
+                actionsCore.setFailed(error.message);
             }
             else {
-                core.setFailed(JSON.stringify(error));
+                actionsCore.setFailed(JSON.stringify(error));
             }
         }
     });
 }
+exports.run = run;
 run();
 
 
