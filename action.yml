@@ -3,12 +3,17 @@ description: 'Retrieves the latest release (tag) of a repository'
 author: 'Ralf Stuckert'
 inputs:
   repository:
-    required: true
+    required: false
     description: 'the repository to get the latest release from'
+    default: ${{ github.repository }}
   token:
-    required: true
+    required: false
     description: 'the PAT allowing to access the repository'
     default: ${{ github.token }}
+  failOnMissingRelease:
+    required: false
+    description: 'indicates if the action should fail, if there is no release. Default is true'
+    default: 'true'
 outputs:
   release:
     description: 'the release version tag'

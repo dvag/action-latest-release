@@ -1,15 +1,11 @@
 import * as core from '@actions/core'
 import {Octokit} from '@octokit/rest'
 
-export function getParameter(parameter: string, required = true): string {
-  const value = core.getInput(parameter)
-  if (required && !value) throw new Error(`parameter '${parameter}' is missing`)
-  return value
-}
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function retrieveLatest(octokit: Octokit) {
-  const repository = getParameter('repository')
+  const repository = core.getInput('repository', {required:true})
+  const failOnMissingRelease = !!core.getInput('failOnMissingRelease')
   const [owner, repo] = repository.split('/')
   const releasesResponse = await octokit.repos.listReleases({
     owner,
@@ -21,7 +17,7 @@ export async function retrieveLatest(octokit: Octokit) {
     .filter(x => !x.draft)
   if (releases.length) {
     core.setOutput('release', releases[0].tag_name)
-  } else {
+  } else if (failOnMissingRelease) {
     core.setFailed('No valid releases')
   }
 }
@@ -29,7 +25,7 @@ export async function retrieveLatest(octokit: Octokit) {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function run() {
   try {
-    const token = getParameter('token')
+    const token = core.getInput('token', {required:true})
     const octokit = new Octokit({auth: token})
     await retrieveLatest(octokit)
   } catch (error) {
