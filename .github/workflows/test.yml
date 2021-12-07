@@ -22,7 +22,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         id: latest-release
-        with:
-          repository: 'dvag/action-latest-release'
       - run: |
           echo "latest release is ${{ steps.latest-release.outputs.release }}"
