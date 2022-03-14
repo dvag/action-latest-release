@@ -24,4 +24,5 @@ jobs:
         id: latest-release
       - run: |
           echo "latest release is ${{ steps.latest-release.outputs.release }}"
+          echo "${{ steps.latest-release.outputs.name }}"
           echo "${{ steps.latest-release.outputs.description }}"

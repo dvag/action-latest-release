@@ -17,6 +17,8 @@ inputs:
 outputs:
   release:
     description: 'the release version tag'
+  name:
+    description: 'the release name'
   description:
     description: 'the release description'
 runs:
