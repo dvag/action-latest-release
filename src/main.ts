@@ -16,8 +16,7 @@ export async function retrieveLatest(octokit: Octokit) {
     .filter(x => !x.draft)
   if (releases.length) {
     core.setOutput('release', releases[0].tag_name)
-    core.info(JSON.stringify(releases[0]))
-    core.setOutput('description', releases[0].body_text)
+    core.setOutput('description', releases[0].body)
   } else if (failOnMissingRelease) {
     core.setFailed('No valid releases')
   }
