@@ -17,6 +17,8 @@ inputs:
 outputs:
   release:
     description: 'the release version tag'
+  description:
+    description: 'the release description'
 runs:
   using: 'node12'
   main: 'dist/index.js'

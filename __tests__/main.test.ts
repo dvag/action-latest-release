@@ -28,7 +28,6 @@ beforeEach(() => {
   inputs = {repository: 'myowner/myrepo', failOnMissingRelease: true}
 })
 
-
 test('only releases', async () => {
   responses['myowner/myrepo'] = [
     {tag_name: 'c'},
