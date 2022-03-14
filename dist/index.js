@@ -57,7 +57,7 @@ function retrieveLatest(octokit) {
             .filter(x => !x.draft);
         if (releases.length) {
             core.setOutput('release', releases[0].tag_name);
-            core.info(JSON.stringify(releases[0]));
+            core.setOutput('name', releases[0].name);
             core.setOutput('description', releases[0].body);
         }
         else if (failOnMissingRelease) {
